@@ -1,0 +1,38 @@
+version: '3.9'
+
+volumes:
+    database:
+
+services:
+    app:
+        container_name: trades_app
+        build:
+            context: .
+            dockerfile: Dockerfile
+        ports:
+            - "8080:8080"  # Expose the Go application port
+        depends_on:
+            - db
+
+    db:
+        image: mysql:8.3.0
+        container_name: trades_db
+        restart: always
+        healthcheck:
+            test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "-uroot", "-ppass"]
+            interval: 5s
+            timeout: 5s
+            retries: 20
+        volumes:
+            - ./database/data:/var/lib/mysql
+            - ./database:/docker-entrypoint-initdb.d
+        environment:
+            MYSQL_DATABASE: "trades"
+            MYSQL_PASSWORD: "gocanto"
+            MYSQL_USER: "gocanto"
+            MYSQL_ROOT_PASSWORD: "my-secret-pw"
+        ports:
+            - "3316:3306"  # Expose the MySQL port
+        expose:
+            - "3306"
+            - "3316"
