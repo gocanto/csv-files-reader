@@ -1,4 +1,8 @@
 version: '3.9'
+networks:
+    gocanto:
+        name: gocanto
+        driver: bridge
 
 volumes:
     database:
@@ -8,6 +12,8 @@ services:
         env_file:
             - .env
         container_name: trades_app
+        networks:
+            - gocanto
         build:
             context: .
             dockerfile: Dockerfile
@@ -20,6 +26,8 @@ services:
         image: mysql:8.3.0
         container_name: trades_db
         restart: always
+        networks:
+            - gocanto
         env_file:
             - .env
         healthcheck:

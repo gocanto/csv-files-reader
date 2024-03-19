@@ -28,12 +28,16 @@ build:
 	docker compose up app --build
 
 build\:fresh:
-	docker compose down --remove-orphans && \
-	docker container prune -f && \
-	docker image prune -f && \
-	docker volume prune -f && \
-	docker network prune -f && \
+	make flush && \
 	docker compose up app --build
+
+flush:
+	docker compose down --remove-orphans
+	docker container prune -f
+	docker image prune -f
+	docker volume prune -f
+	docker network prune -f
+	rm -rf ./database/data
 
 stop:
 	docker-compose down --volumes
