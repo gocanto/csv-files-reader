@@ -5,12 +5,14 @@ volumes:
 
 services:
     app:
+        env_file:
+            - .env
         container_name: trades_app
         build:
             context: .
             dockerfile: Dockerfile
         ports:
-            - "8080:8080"  # Expose the Go application port
+            - "8080:8080"
         depends_on:
             - db
 
@@ -18,6 +20,8 @@ services:
         image: mysql:8.3.0
         container_name: trades_db
         restart: always
+        env_file:
+            - .env
         healthcheck:
             test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "-uroot", "-ppass"]
             interval: 5s
@@ -27,12 +31,12 @@ services:
             - ./database/data:/var/lib/mysql
             - ./database:/docker-entrypoint-initdb.d
         environment:
-            MYSQL_DATABASE: "trades"
-            MYSQL_PASSWORD: "gocanto"
-            MYSQL_USER: "gocanto"
-            MYSQL_ROOT_PASSWORD: "my-secret-pw"
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
         ports:
-            - "3316:3306"  # Expose the MySQL port
+            - "3316:3306"
         expose:
             - "3306"
             - "3316"
