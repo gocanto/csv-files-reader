@@ -53,7 +53,6 @@ func (receiver Response) BadRequest(message string) error {
 }
 
 func (receiver Response) ServerError(message string) error {
-	receiver.writer.WriteHeader(http.StatusOK)
 	receiver.writer.WriteHeader(http.StatusInternalServerError)
 
 	return json.NewEncoder(receiver.writer).Encode(

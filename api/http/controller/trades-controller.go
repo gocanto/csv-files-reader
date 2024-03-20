@@ -7,7 +7,6 @@ import (
 	"ohlc-price-data/api/handler"
 	apiHttp "ohlc-price-data/api/http"
 	"ohlc-price-data/api/repository"
-	"strconv"
 )
 
 type TradesController struct {
@@ -22,12 +21,18 @@ func (controller TradesController) Query(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	_ = response.Ok(
-		map[string]string{
-			"status":  strconv.Itoa(http.StatusOK),
-			"message": "Query endpoint",
-		},
-	)
+	filters := map[string]interface{}{
+		"symbol": "BTCUSDT",
+	}
+
+	trades, err := controller.repository.Query(2, 2, filters)
+
+	if err != nil {
+		_ = response.ServerError(fmt.Sprintf("There was an error [%s] while performing the query", err))
+		return
+	}
+
+	_ = response.Ok(trades)
 }
 
 func (controller TradesController) Upload(w http.ResponseWriter, r *http.Request) {
