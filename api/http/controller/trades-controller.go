@@ -17,7 +17,7 @@ func (controller TradesController) Upload(w http.ResponseWriter, r *http.Request
 	response := apiHttp.MakeResponse(w, r)
 
 	if r.Method != http.MethodPost {
-		_ = response.MethodNotAllowed()
+		_ = response.MethodNotAllowed("POST")
 		return
 	}
 

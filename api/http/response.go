@@ -2,6 +2,7 @@ package http
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 )
@@ -26,14 +27,15 @@ func (receiver Response) Ok(payload interface{}) error {
 	return json.NewEncoder(receiver.writer).Encode(payload)
 }
 
-func (receiver Response) MethodNotAllowed() error {
+func (receiver Response) MethodNotAllowed(verb string) error {
 	receiver.writer.WriteHeader(http.StatusOK)
 	receiver.writer.WriteHeader(http.StatusMethodNotAllowed)
 
 	return json.NewEncoder(receiver.writer).Encode(
 		map[string]string{
-			"status":  strconv.Itoa(http.StatusMethodNotAllowed),
-			"message": "The given method is not allowed",
+			"status":      strconv.Itoa(http.StatusMethodNotAllowed),
+			"message":     "The given method is not allowed",
+			"description": fmt.Sprintf("The given methos has to be [%s]", verb),
 		},
 	)
 }
