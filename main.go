@@ -1,12 +1,14 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 func main() {
@@ -38,8 +40,6 @@ func uploadCSVHandler(w http.ResponseWriter, r *http.Request) {
 
 	content, err := csv.NewReader(file).ReadAll()
 
-	//fmt.Println(file, "handler", content, "---------", err)
-
 	//// Ensure the uploaded file is a CSV file
 	if handler.Header.Get("Content-Type") != "text/csv" {
 		http.Error(w, "Invalid file format. Please upload a CSV file", http.StatusBadRequest)
@@ -53,73 +53,61 @@ func uploadCSVHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//for record := content {
-	//	nixTime, _ := strconv.ParseInt(record[0], 10, 64)
-	//	open, _ := strconv.ParseFloat(record[2], 64)
-	//	high, _ := strconv.ParseFloat(record[3], 64)
-	//	low, _ := strconv.ParseFloat(record[4], 64)
-	//	closeRow, _ := strconv.ParseFloat(record[5], 64)
-	//}
-	//
-	//for {
-	//	record := content
-	//	if err != nil {
-	//		fmt.Println("reader error", err, "data:", record)
-	//		break
-	//	}
-	//
-	//	unixTime, _ := strconv.ParseInt(record[0], 10, 64)
-	//	open, _ := strconv.ParseFloat(record[2], 64)
-	//	high, _ := strconv.ParseFloat(record[3], 64)
-	//	low, _ := strconv.ParseFloat(record[4], 64)
-	//	closeRow, _ := strconv.ParseFloat(record[5], 64)
-	//	data = append(data, StockData{
-	//		UnixTime: unixTime,
-	//		Symbol:   record[1],
-	//		Open:     open,
-	//		High:     high,
-	//		Low:      low,
-	//		Close:    closeRow,
-	//	})
-	//}
-	//
-	//// Connect to MySQL database
-	//dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", "root", "pass", "localhost", 3306, "trades")
-	//fmt.Println("dsn:", dsn)
-	//db, err := sql.Open("mysql", "gocanto:gocanto@tcp(db:3306)/trades")
-	////db, err := sql.Open("mysql", dsn)
-	//if err != nil {
-	//	log.Fatal("Error connecting to database:", err)
-	//}
-	//defer db.Close()
-	////db.SetConnMaxLifetime(time.Minute * 3)
-	////db.SetMaxOpenConns(10)
-	////db.SetMaxIdleConns(10)
-	//
-	//// Insert data into MySQL table
-	//stmt, err := db.Prepare("INSERT INTO trades (unix, symbol, open, high, low, close) VALUES (?, ?, ?, ?, ?, ?)")
-	//if err != nil {
-	//	log.Fatal("Error preparing statement:", err)
-	//}
-	//defer stmt.Close()
-	//
-	//for _, d := range data {
-	//	fmt.Println("data:", d, "---")
-	//
-	//	_, err := stmt.Exec(d.UnixTime, d.Symbol, d.Open, d.High, d.Low, d.Close)
-	//	if err != nil {
-	//		log.Fatal("Error inserting row:", err)
-	//	}
-	//}
-	//
-	//fmt.Println("Data inserted successfully")
+	// Connect to MySQL database
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", "gocanto", "gocanto", "db", 3306, "trades")
+	fmt.Println("dsn:", dsn, "current: ", "gocanto:gocanto@tcp(db:3306)/trades")
+	db, err := sql.Open("mysql", "gocanto:gocanto@tcp(db:3306)/trades")
+
+	if err != nil {
+		log.Fatal("Error connecting to database:", err)
+	}
+	defer db.Close()
+
+	var output []StockData
+
+	stmt, err := db.Prepare("INSERT INTO trades (unix, symbol, open, high, low, close) VALUES (?, ?, ?, ?, ?, ?)")
+	if err != nil {
+		log.Fatal("Error with statement")
+	}
+	defer stmt.Close()
+
+	for key, val := range content {
+		if key == 0 { //header
+			continue
+		}
+
+		open, _ := strconv.ParseFloat(val[2], 64)
+		high, _ := strconv.ParseFloat(val[3], 64)
+		low, _ := strconv.ParseFloat(val[4], 64)
+		closeVal, _ := strconv.ParseFloat(val[5], 64)
+
+		output = append(output, StockData{
+			unix:   val[0],
+			Symbol: val[1],
+			Open:   open,
+			High:   high,
+			Low:    low,
+			Close:  closeVal,
+		})
+
+		fmt.Println("key:", key, "val:", val)
+
+		_, err := stmt.Exec(val[0], val[1], val[2], val[3], val[4], val[5])
+		if err != nil {
+			fmt.Println("error inserting")
+			return
+		}
+	}
+
+	fmt.Println("Output: ", output)
+	fmt.Println("Data inserted successfully")
 }
 
 type StockData struct {
-	UnixTime int64
-	Symbol   string
-	Open     float64
-	High     float64
-	Low      float64
-	Close    float64
+	unix   string
+	Symbol string
+	Open   float64
+	High   float64
+	Low    float64
+	Close  float64
 }
