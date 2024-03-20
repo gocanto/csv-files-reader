@@ -7,10 +7,27 @@ import (
 	"ohlc-price-data/api/handler"
 	apiHttp "ohlc-price-data/api/http"
 	"ohlc-price-data/api/repository"
+	"strconv"
 )
 
 type TradesController struct {
 	repository repository.TradesRepository
+}
+
+func (controller TradesController) Query(w http.ResponseWriter, r *http.Request) {
+	response := apiHttp.MakeResponse(w, r)
+
+	if r.Method != http.MethodGet {
+		_ = response.MethodNotAllowed("GET")
+		return
+	}
+
+	_ = response.Ok(
+		map[string]string{
+			"status":  strconv.Itoa(http.StatusOK),
+			"message": "Query endpoint",
+		},
+	)
 }
 
 func (controller TradesController) Upload(w http.ResponseWriter, r *http.Request) {
