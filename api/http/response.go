@@ -3,6 +3,7 @@ package http
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 )
 
 type Response struct {
@@ -23,4 +24,40 @@ func (receiver Response) Ok(payload interface{}) error {
 	receiver.writer.WriteHeader(http.StatusOK)
 
 	return json.NewEncoder(receiver.writer).Encode(payload)
+}
+
+func (receiver Response) MethodNotAllowed() error {
+	receiver.writer.WriteHeader(http.StatusOK)
+	receiver.writer.WriteHeader(http.StatusMethodNotAllowed)
+
+	return json.NewEncoder(receiver.writer).Encode(
+		map[string]string{
+			"status":  strconv.Itoa(http.StatusMethodNotAllowed),
+			"message": "The given method is not allowed",
+		},
+	)
+}
+
+func (receiver Response) BadRequest(message string) error {
+	receiver.writer.WriteHeader(http.StatusOK)
+	receiver.writer.WriteHeader(http.StatusBadRequest)
+
+	return json.NewEncoder(receiver.writer).Encode(
+		map[string]string{
+			"status":  strconv.Itoa(http.StatusBadRequest),
+			"message": message,
+		},
+	)
+}
+
+func (receiver Response) ServerError(message string) error {
+	receiver.writer.WriteHeader(http.StatusOK)
+	receiver.writer.WriteHeader(http.StatusInternalServerError)
+
+	return json.NewEncoder(receiver.writer).Encode(
+		map[string]string{
+			"status":  strconv.Itoa(http.StatusInternalServerError),
+			"message": message,
+		},
+	)
 }

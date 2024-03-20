@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"log"
+	"fmt"
 	"net/http"
 	"ohlc-price-data/api/entity"
 	"ohlc-price-data/api/handler"
@@ -17,25 +17,28 @@ func (controller TradesController) Upload(w http.ResponseWriter, r *http.Request
 	response := apiHttp.MakeResponse(w, r)
 
 	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		_ = response.MethodNotAllowed()
 		return
 	}
 
 	err := r.ParseMultipartForm(10 << 20) // 10 MB maximum
 	if err != nil {
-		http.Error(w, "Max form size is 10MB", http.StatusBadRequest)
+		_ = response.BadRequest("Invalid input. Max form size is 10MB")
 		return
 	}
 
 	file, err := handler.MakeCSVFileFrom("file", r)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		_ = response.BadRequest(fmt.Sprintf("There was an issue [%s] while reading the file.", err))
 		return
 	}
 
+	//@todo Add validation on duplicated entries.
 	output, err := controller.repository.InsertFromCSV(entity.Trade{}, file)
 	if err != nil {
-		log.Fatal("Error with insert", err)
+		_ = response.ServerError(fmt.Sprintf("There was an issue [%s] inserting the parsed data.", err))
+
+		return
 	}
 
 	_ = response.Ok(output)
