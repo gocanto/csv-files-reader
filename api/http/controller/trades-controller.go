@@ -27,6 +27,7 @@ func (controller TradesController) Upload(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	//@todo it can be multiple type of files, so the handler can be swap?
 	file, err := handler.MakeCSVFileFrom("file", r)
 	if err != nil {
 		_ = response.BadRequest(fmt.Sprintf("There was an issue [%s] while reading the file.", err))
@@ -41,5 +42,6 @@ func (controller TradesController) Upload(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	//@todo better format?
 	_ = response.Ok(output)
 }

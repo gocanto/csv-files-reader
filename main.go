@@ -31,7 +31,7 @@ func main() {
 	tradesController, _ := controller.MakeTradesController(tradesRepository)
 
 	// --- Handlers
-	http.HandleFunc("/upload/csv", tradesController.Upload)
+	http.HandleFunc("/data", tradesController.Upload)
 
 	// --- Server
 	err = http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("APP_HTTP_SERVING_PORT")), nil)
