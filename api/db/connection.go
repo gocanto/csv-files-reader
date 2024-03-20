@@ -11,7 +11,6 @@ type Connection struct {
 
 func MakeDBConnectionFrom(dsn string) (Connection, error) {
 	db, err := sql.Open("mysql", dsn)
-	//defer db.Close()
 
 	if err != nil {
 		return Connection{}, err

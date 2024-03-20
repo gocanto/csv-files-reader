@@ -11,20 +11,15 @@ help:
 	@echo "               Api CLI Help                   "
 	@echo "----------------------------------------------"
 	@echo " "
-	@echo "run:api ................................ Start the application."
-	@echo "build .................................. Build the app container."
-	@echo "build:fresh ............................ Build a fresh instance of the app container."
+	@echo "build .................................. Start the app container."
+	@echo "build:fresh ............................ Build a fresh instance of the application."
 	@echo "status ................................. Display the status of all containers."
 	@echo "stop ................................... Destroy the application container."
 	@echo " "
 	@echo "----------------------------------------------"
 
-
-run\:api:
-	cd cmd/app && go mod tidy && go mod download && \
-	CGO_ENABLED=0 go run -tags app github.com/ohlc-price-data/cmd/app
-
 build:
+	go mod tidy && \
 	docker compose up app --build
 
 build\:fresh:
