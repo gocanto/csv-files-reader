@@ -5,6 +5,7 @@ import (
 	"ohlc-price-data/api/db"
 	"ohlc-price-data/api/entity"
 	"ohlc-price-data/api/handler"
+	"ohlc-price-data/api/validator"
 	"strconv"
 )
 
@@ -57,62 +58,49 @@ func (receiver TradesRepository) InsertFromCSV(trade entity.Trade, file handler.
 	return output, nil
 }
 
-func (receiver TradesRepository) Query(limit, offset int, filter map[string]interface{}) ([]entity.Trade, error) {
+func (receiver TradesRepository) Query(seed entity.Trade) ([]entity.Trade, error) {
+	filters := validator.ParseTradesFiltersFrom(seed)
 	baseQuery := "SELECT * FROM trades WHERE 1 = 1"
+	args := make([]any, 0)
 
-	args := make([]interface{}, 0)
-	var conditions []string
-
-	for field, value := range filter {
-		switch field {
-		case "symbol":
-			conditions = append(conditions, fmt.Sprintf("%s = ?", "symbol"))
-			args = append(args, value)
-		case "open":
-			conditions = append(conditions, fmt.Sprintf("%s = ?", "open"))
-			args = append(args, value)
-		case "high":
-			conditions = append(conditions, fmt.Sprintf("%s = ?", "high"))
-			args = append(args, value)
-		}
+	for key, val := range filters {
+		baseQuery += fmt.Sprintf(" AND %s = ?", key)
+		args = append(args, val)
 	}
 
-	if len(conditions) > 0 {
-		for _, cond := range conditions {
-			baseQuery += " AND " + cond
-		}
-	}
+	baseQuery += " LIMIT 2 OFFSET 0" //change
 
-	baseQuery += " LIMIT ? OFFSET ?"
-	args = append(args, limit, offset)
-
-	fmt.Println(baseQuery, "-----", args, "-- conditions --", conditions)
-
-	// Execute the query
-	rows, err := receiver.conn.DB.Query(baseQuery, args...)
+	rows, err := receiver.DB.DB.Query(baseQuery, args...)
 	if err != nil {
-		fmt.Println("-- here --")
 		return nil, err
 	}
-	//defer rows.Close()
 
+	defer rows.Close()
 	var trades []entity.Trade
 
-	// Iterate through the result set
+	fmt.Println(" ")
+	fmt.Println("------------")
+	fmt.Println("base query: ", baseQuery)
+	fmt.Println("***")
+	fmt.Println(rows)
+	fmt.Println(" ")
+
 	for rows.Next() {
-		var t entity.Trade
-		if err := rows.Scan(&t.Unix, &t.Unix, &t.Symbol, &t.Open, &t.High, &t.Low, &t.Close); err != nil {
-			fmt.Println("-- here 2 --")
+		var current entity.Trade
+
+		if err := rows.Scan(
+			&current.ID,
+			&current.Unix,
+			&current.Symbol,
+			&current.Open,
+			&current.High,
+			&current.Low,
+			&current.Close,
+		); err != nil {
 			return nil, err
 		}
 
-		trades = append(trades, t)
-	}
-
-	// Check for errors from iterating over rows
-	if err := rows.Err(); err != nil {
-		fmt.Println("-- here 3--")
-		return nil, err
+		trades = append(trades, current)
 	}
 
 	return trades, nil

@@ -1,6 +1,9 @@
 package entity
 
+var AllowedInFiltering = []string{"symbol", "unix"}
+
 type Trade struct {
+	ID     string  `json:"id"`
 	Unix   string  `json:"unix"`
 	Symbol string  `json:"symbol"`
 	Open   float64 `json:"open"`

@@ -1,7 +1,9 @@
 package controller
 
 import (
+	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"ohlc-price-data/api/entity"
 	"ohlc-price-data/api/handler"
@@ -21,14 +23,18 @@ func (controller TradesController) Query(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	filters := map[string]interface{}{
-		"symbol": "BTCUSDT",
-	}
-
-	trades, err := controller.repository.Query(2, 2, filters)
+	var body entity.Trade
+	err := json.NewDecoder(r.Body).Decode(&body)
 
 	if err != nil {
-		_ = response.ServerError(fmt.Sprintf("There was an error [%s] while performing the query", err))
+		_ = response.BadRequest("The given payload is invalid.")
+		return
+	}
+
+	trades, err := controller.repository.Query(body)
+	if err != nil {
+		_ = response.ServerError("There was an issue while fetching the data.")
+		log.Fatal(fmt.Sprintf("Invalid query: [%s]", err))
 		return
 	}
 
