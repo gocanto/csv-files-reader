@@ -39,6 +39,29 @@ CSV file (more options in the future) and one to query the data uploaded to the 
 
 Please note that the above URLs and ports depend 100% on your local/servers configuration.
 
+### Setting up the environment.
+
+If you were curious enough and decided to install the Makefile tools, you can run
+the given command from within this repository root directory to see the options we have for you.
+
+```bash
+make help
+
+----------------------------------------------
+               Api CLI Help
+----------------------------------------------
+
+build .................................. Start the app container.
+flush .................................. Remove all instances of the application.
+status ................................. Display the status of all containers.
+stop ................................... Destroy the application container.
+
+----------------------------------------------
+```
+
+Otherwise, you can always visit this [file](https://github.com/gocanto/ohlc-price-data/blob/main/Makefile#L21-L41) to spin the environment up if this
+happens to be your style.
+
 ### How to use it
 
 You can either use the available PostMan collections within this repository. Otherwose, you
@@ -50,6 +73,8 @@ curl --location 'http://localhost:8080/upload' \
 --header 'Content-Type: multipart/form-data' \
 --form 'file=@"/Users/gus/Sites/ohlc-price-data/__fixtures__/payload.csv"'
 ```
+> Note that the given testing file needs to be mapped to your local computer in order
+> for the test to work.
 
 ***Query data***
 ```bash
@@ -70,14 +95,11 @@ Please see the [license file](https://github.com/gocanto/ohlc-price-data/blob/ma
 
 ## How can I thank you?
 
-There are many ways you would be able to support my open source work. There is not a right one to choose, so the choice is yours.
-
-Nevertheless :grinning:, I would propose the following
-
 - :arrow_up: Follow me on [Twitter](https://twitter.com/gocanto).
 - :star: Star the repository.
 - :handshake: Open a pull request to fix/improve the codebase.
 - :writing_hand: Open a pull request to improve the documentation.
+- :email: Let's connect in [LinkedIn](https://www.linkedin.com/in/gocanto/).
 
 > Thank you for reading this far. :blush:
 

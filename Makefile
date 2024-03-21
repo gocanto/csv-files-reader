@@ -12,7 +12,7 @@ help:
 	@echo "----------------------------------------------"
 	@echo " "
 	@echo "build .................................. Start the app container."
-	@echo "flush .................................. Build a fresh instance of the application."
+	@echo "flush .................................. Remove all instances of the application."
 	@echo "status ................................. Display the status of all containers."
 	@echo "stop ................................... Destroy the application container."
 	@echo " "
