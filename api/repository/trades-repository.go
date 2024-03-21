@@ -5,7 +5,6 @@ import (
 	"ohlc-price-data/api/db"
 	"ohlc-price-data/api/entity"
 	"ohlc-price-data/api/handler"
-	"ohlc-price-data/api/validator"
 	"strconv"
 )
 
@@ -58,8 +57,8 @@ func (receiver TradesRepository) InsertFromCSV(trade entity.Trade, file handler.
 	return output, nil
 }
 
-func (receiver TradesRepository) Query(seed entity.Trade) ([]entity.Trade, error) {
-	filters := validator.ParseTradesFiltersFrom(seed)
+func (receiver TradesRepository) Query(seed entity.Trade, pagination entity.Pagination) ([]entity.Trade, error) {
+	filters := entity.ParseTradesFiltersFrom(seed)
 	baseQuery := "SELECT * FROM trades WHERE 1 = 1"
 	args := make([]any, 0)
 
@@ -68,7 +67,7 @@ func (receiver TradesRepository) Query(seed entity.Trade) ([]entity.Trade, error
 		args = append(args, val)
 	}
 
-	baseQuery += " LIMIT 2 OFFSET 0" //change
+	baseQuery += fmt.Sprintf(" LIMIT %s OFFSET %s", pagination.Limit, pagination.Offset)
 
 	rows, err := receiver.DB.DB.Query(baseQuery, args...)
 	if err != nil {
@@ -77,13 +76,6 @@ func (receiver TradesRepository) Query(seed entity.Trade) ([]entity.Trade, error
 
 	defer rows.Close()
 	var trades []entity.Trade
-
-	fmt.Println(" ")
-	fmt.Println("------------")
-	fmt.Println("base query: ", baseQuery)
-	fmt.Println("***")
-	fmt.Println(rows)
-	fmt.Println(" ")
 
 	for rows.Next() {
 		var current entity.Trade

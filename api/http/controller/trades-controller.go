@@ -31,7 +31,11 @@ func (controller TradesController) Query(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	trades, err := controller.repository.Query(body)
+	trades, err := controller.repository.Query(
+		body,
+		entity.MakeDefaultPaginationFrom(r.URL.Query()),
+	)
+
 	if err != nil {
 		_ = response.ServerError("There was an issue while fetching the data.")
 		log.Fatal(fmt.Sprintf("Invalid query: [%s]", err))

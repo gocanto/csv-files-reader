@@ -1,5 +1,10 @@
 package entity
 
+import (
+	"ohlc-price-data/api/support"
+	"strings"
+)
+
 var AllowedInFiltering = []string{"symbol", "unix"}
 
 type Trade struct {
@@ -14,4 +19,19 @@ type Trade struct {
 
 func (receiver Trade) GetInsertSQL() string {
 	return "INSERT INTO trades (unix, symbol, open, high, low, close) VALUES (?, ?, ?, ?, ?, ?)"
+}
+
+func ParseTradesFiltersFrom(trade Trade) map[string]string {
+	filter := make(map[string]string)
+	allowed := AllowedInFiltering
+
+	if seed := len(strings.TrimSpace(trade.Symbol)); seed > 0 && support.ContainsString(allowed, "symbol") {
+		filter["symbol"] = trade.Symbol
+	}
+
+	if seed := len(strings.TrimSpace(trade.Unix)); seed > 0 && support.ContainsString(allowed, "unix") {
+		filter["unix"] = trade.Unix
+	}
+
+	return filter
 }
