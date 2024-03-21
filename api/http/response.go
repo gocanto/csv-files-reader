@@ -28,7 +28,6 @@ func (receiver Response) Ok(payload interface{}) error {
 }
 
 func (receiver Response) MethodNotAllowed(verb string) error {
-	receiver.writer.WriteHeader(http.StatusOK)
 	receiver.writer.WriteHeader(http.StatusMethodNotAllowed)
 
 	return json.NewEncoder(receiver.writer).Encode(
@@ -41,7 +40,6 @@ func (receiver Response) MethodNotAllowed(verb string) error {
 }
 
 func (receiver Response) BadRequest(message string) error {
-	receiver.writer.WriteHeader(http.StatusOK)
 	receiver.writer.WriteHeader(http.StatusBadRequest)
 
 	return json.NewEncoder(receiver.writer).Encode(
