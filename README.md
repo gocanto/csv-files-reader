@@ -1,7 +1,7 @@
 ### About it
 
 The given API allows users to send bulk data to your
-servers using CSV files. This opens the door ro various integrations
+servers using CSV files. This opens the door to various integrations
 where the information you need to handle in your app is given by
 3rd party services.
 
@@ -15,15 +15,15 @@ the [Make command line](https://makefiletutorial.com/) to use the handy commands
 this repository.
 
 After you have these two (2) installed in your local machine, you can go ahead and clone
-this repository like so `git@github.com:gocanto/ohlc-price-data.git` within your
+this repository like so `git@github.com:gocanto/csv-files-reader.git` within your
 desire directory in your local machine.
 
 Once you have cloned the repository, position yourself in the clone directory from within
-you command line a type the following `cp .env.example .env`. This will make sure your
+your command line a type the following `cp .env.example .env`. This will make sure your
 system has the proper env vars needed to run the app locally.
 
 > Notes:
-> - Make sure you have git install before cloning this repository.
+> - Make sure you have git installed before cloning this repository.
 > - We have shipped a [postman collection](https://github.com/gocanto/ohlc-price-data/tree/main/__fixtures__) for you to have at hand when testing the app.
 > - You will need some sort of MySQL client if you would like to inspect the database.
 
@@ -37,7 +37,7 @@ CSV file (more options in the future) and one to query the data uploaded to the 
 [GET] http://localhost:8080/query
 ```
 
-Please note that the above URLs and ports depend 100% on your local/servers configuration.
+Please note that the above URLs and ports depend 100% on your local/server configuration.
 
 ### Setting up the environment.
 
@@ -64,7 +64,7 @@ happens to be your style.
 
 ### How to use it
 
-You can either use the available PostMan collections within this repository. Otherwose, you
+You can either use the available PostMan collections within this repository. Otherwise, you
 might want to try using your terminal like so:
 
 ***Upload data***
