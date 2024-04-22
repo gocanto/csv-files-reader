@@ -1,7 +1,7 @@
 package entity
 
 import (
-	"ohlc-price-data/api/support"
+	"github.com/gocanto/csv-files-reader/api/support"
 	"strings"
 )
 

@@ -1,4 +1,4 @@
-package entity
+package http
 
 import (
 	"net/url"

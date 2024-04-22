@@ -1,6 +1,6 @@
 package controller
 
-import "ohlc-price-data/api/repository"
+import "github.com/gocanto/csv-files-reader/api/repository"
 
 func MakeTradesController(repository repository.TradesRepository) (TradesController, error) {
 	return TradesController{
