@@ -21,8 +21,10 @@ func MakeTradesRepositoryFrom(conn db.Connection) (TradesRepository, error) {
 	}, nil
 }
 
-func (receiver TradesRepository) InsertFromCSV(trade entity.Trade, file handler.CSVFile) ([]entity.Trade, error) {
-	query, err := receiver.conn.DB.Prepare(trade.GetInsertSQL())
+func (receiver TradesRepository) InsertFromCSV(file handler.CSVFile) ([]entity.Trade, error) {
+	query, err := receiver.conn.DB.Prepare(
+		"INSERT INTO trades (unix, symbol, open, high, low, close) VALUES (?, ?, ?, ?, ?, ?)",
+	)
 
 	if err != nil {
 		return nil, err

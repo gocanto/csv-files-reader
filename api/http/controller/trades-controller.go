@@ -67,7 +67,7 @@ func (controller TradesController) Upload(w http.ResponseWriter, r *http.Request
 	}
 
 	//@todo Add validation on duplicated entries.
-	output, err := controller.repository.InsertFromCSV(entity.Trade{}, file)
+	output, err := controller.repository.InsertFromCSV(file)
 	if err != nil {
 		_ = response.ServerError(fmt.Sprintf("There was an issue [%s] inserting the parsed data.", err))
 

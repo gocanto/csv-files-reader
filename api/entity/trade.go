@@ -17,10 +17,6 @@ type Trade struct {
 	Close  float64 `json:"close"`
 }
 
-func (receiver Trade) GetInsertSQL() string {
-	return "INSERT INTO trades (unix, symbol, open, high, low, close) VALUES (?, ?, ?, ?, ?, ?)"
-}
-
 func ParseTradesFiltersFrom(trade Trade) map[string]string {
 	filter := make(map[string]string)
 	allowed := AllowedInFiltering
