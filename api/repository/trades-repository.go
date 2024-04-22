@@ -2,9 +2,10 @@ package repository
 
 import (
 	"fmt"
-	"ohlc-price-data/api/db"
-	"ohlc-price-data/api/entity"
-	"ohlc-price-data/api/handler"
+	"github.com/gocanto/csv-files-reader/api/db"
+	"github.com/gocanto/csv-files-reader/api/entity"
+	"github.com/gocanto/csv-files-reader/api/handler"
+	"github.com/gocanto/csv-files-reader/api/http"
 	"strconv"
 )
 
@@ -20,8 +21,10 @@ func MakeTradesRepositoryFrom(conn db.Connection) (TradesRepository, error) {
 	}, nil
 }
 
-func (receiver TradesRepository) InsertFromCSV(trade entity.Trade, file handler.CSVFile) ([]entity.Trade, error) {
-	query, err := receiver.conn.DB.Prepare(trade.GetInsertSQL())
+func (receiver TradesRepository) InsertFromCSV(file handler.CSVFile) ([]entity.Trade, error) {
+	query, err := receiver.conn.DB.Prepare(
+		"INSERT INTO trades (unix, symbol, open, high, low, close) VALUES (?, ?, ?, ?, ?, ?)",
+	)
 
 	if err != nil {
 		return nil, err
@@ -57,13 +60,13 @@ func (receiver TradesRepository) InsertFromCSV(trade entity.Trade, file handler.
 	return output, nil
 }
 
-func (receiver TradesRepository) Query(seed entity.Trade, pagination entity.Pagination) ([]entity.Trade, error) {
+func (receiver TradesRepository) Query(seed entity.Trade, pagination http.Pagination) ([]entity.Trade, error) {
 	filters := entity.ParseTradesFiltersFrom(seed)
 	baseQuery := "SELECT * FROM trades WHERE 1 = 1"
 	args := make([]any, 0)
 
 	for key, val := range filters {
-		baseQuery += fmt.Sprintf(" AND %s = ?", key)
+		baseQuery += fmt.Sprintf(" AND %s = ?", key) // fuc()
 		args = append(args, val)
 	}
 

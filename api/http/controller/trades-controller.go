@@ -3,12 +3,12 @@ package controller
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gocanto/csv-files-reader/api/entity"
+	"github.com/gocanto/csv-files-reader/api/handler"
+	apiHttp "github.com/gocanto/csv-files-reader/api/http"
+	"github.com/gocanto/csv-files-reader/api/repository"
 	"log"
 	"net/http"
-	"ohlc-price-data/api/entity"
-	"ohlc-price-data/api/handler"
-	apiHttp "ohlc-price-data/api/http"
-	"ohlc-price-data/api/repository"
 )
 
 type TradesController struct {
@@ -33,7 +33,7 @@ func (controller TradesController) Query(w http.ResponseWriter, r *http.Request)
 
 	trades, err := controller.repository.Query(
 		body,
-		entity.MakeDefaultPaginationFrom(r.URL.Query()),
+		apiHttp.MakeDefaultPaginationFrom(r.URL.Query()),
 	)
 
 	if err != nil {
@@ -67,7 +67,7 @@ func (controller TradesController) Upload(w http.ResponseWriter, r *http.Request
 	}
 
 	//@todo Add validation on duplicated entries.
-	output, err := controller.repository.InsertFromCSV(entity.Trade{}, file)
+	output, err := controller.repository.InsertFromCSV(file)
 	if err != nil {
 		_ = response.ServerError(fmt.Sprintf("There was an issue [%s] inserting the parsed data.", err))
 

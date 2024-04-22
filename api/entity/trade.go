@@ -1,7 +1,7 @@
 package entity
 
 import (
-	"ohlc-price-data/api/support"
+	"github.com/gocanto/csv-files-reader/api/support"
 	"strings"
 )
 
@@ -15,10 +15,6 @@ type Trade struct {
 	High   float64 `json:"high"`
 	Low    float64 `json:"low"`
 	Close  float64 `json:"close"`
-}
-
-func (receiver Trade) GetInsertSQL() string {
-	return "INSERT INTO trades (unix, symbol, open, high, low, close) VALUES (?, ?, ?, ?, ?, ?)"
 }
 
 func ParseTradesFiltersFrom(trade Trade) map[string]string {

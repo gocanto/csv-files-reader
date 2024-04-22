@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/gocanto/csv-files-reader/api/db"
+	"github.com/gocanto/csv-files-reader/api/http/controller"
+	"github.com/gocanto/csv-files-reader/api/repository"
 	"net/http"
-	"ohlc-price-data/api/db"
-	"ohlc-price-data/api/http/controller"
-	"ohlc-price-data/api/repository"
 	"os"
 )
 
@@ -28,7 +28,7 @@ func main() {
 
 	// --- DI
 	tradesRepository, _ := repository.MakeTradesRepositoryFrom(dbConnection)
-	tradesController, _ := controller.MakeTradesController(tradesRepository)
+	tradesController, _ := controller.MakeTradesController(tradesRepository) //handler
 
 	// --- Handlers
 	http.HandleFunc("/upload", tradesController.Upload)
